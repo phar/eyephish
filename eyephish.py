@@ -3,7 +3,6 @@ import cv2
 import numpy
 import operator
 import argparse
-import itertools
 
 ###############
 # -phar
@@ -28,70 +27,26 @@ DIALECTS = {
 
 
 
-def get_homograph_canvas_size(im, contour):
-	maxx = 0
-	minx = im.shape[0]
-	maxy = 0
-	miny = im.shape[1]
-	
-	for c in contour:
-		(x,y,w,h) = cv2.boundingRect(c)
-		
-		if x < minx:
-			minx = x
-		if y < miny:
-			miny = y
-		if (x + w) > maxx:
-			maxx = (x + w)
-		if (y + h) > maxx:
-			maxy = (y + h)
-	return (minx,maxx,miny,maxy)
 
-
-
-
-def homograph_score(im1, c1, im2, c2):
+def homograph_score(im1, im2):
 	im3 = cv2.absdiff(im1,im2)
 	#cv2.imshow("Keypoints", im1)
 	#cv2.imshow("Keypoints2", im2)
 	#cv2.imshow("Keypoints3", im3)
 	#cv2.waitKey(200)
-
-	#ok mr o'horo... just the bare match
-	basic_score =  im3.sum()/(im3.shape[0] * im3.shape[1])
-
-	#try a wide match (stretch im2 to the width of im1 and try it again
-	#	tim = Image.fromarray(im1)
-	
-	(minx1,max1,miny1,maxy1) = get_homograph_canvas_size(im1,c1)
-	(minx2,max2,miny2,maxy2) = get_homograph_canvas_size(im2,c2)
-	
-	c1xr = float(max2-minx2)/float(max1-minx1)
-#	c1yr = (may2-miny2)/(may1-miny1)
-	c1yr = 1.0
-
-	print float(max2-minx2),float(max1-minx1),c1xr
-	
-#convert to PIL then resize and recenter it
-	tim = Image.fromarray(im2)
-	cv2.imshow("boooout1", numpy.array(tim))
-	tim = tim.resize((int(im1.shape[1] * c1xr), int(im2.shape[0] / c1yr)), Image.ANTIALIAS)
-
-	cv2.imshow("boooin", numpy.array(im1))
-	cv2.imshow("boooout2", numpy.array(tim))
-	cv2.waitKey(100)
-	return basic_score
+	score =  im3.sum()/(im3.shape[0] * im3.shape[1])
+	return score
 
 
-def get_centroidized_unicode_img(testchr,font, fontsize = 16,chrwidth = 1):
+def get_centroidized_unicode_img(testchr,font, fontsize = 16):
 
 	ttf=ImageFont.truetype(font, fontsize)
 
-	testw = 40 * chrwidth
+	testw = 40
 	testh = 40
 
 #crap out an image with a charcter in it, in a reasonable location
-	im1 = Image.new("RGB", (testw,testh), "white")
+	im1 = Image.new("RGB", (testh,testw), "white")
 	ImageDraw.Draw(im1).text((testh/3,testw/3),testchr, fill='black', font=ttf)
 	imx = numpy.array(im1)
 
@@ -105,7 +60,6 @@ def get_centroidized_unicode_img(testchr,font, fontsize = 16,chrwidth = 1):
 	cxx = []
 	cxy = []
 	for c in contours[1:]:
-		
 		M = cv2.moments(c)
 		try:
 			cxx.append(int(M['m10']/M['m00']))
@@ -123,15 +77,15 @@ def get_centroidized_unicode_img(testchr,font, fontsize = 16,chrwidth = 1):
 		cy = sum(cxy) / len(cxy)
 	else:
 		cy = 0
-	cx =  (testw/2) - (cx - (testw/3))
-	cy = (testh/2) - (cy - (testh/3))
+	cx =  (40/2) - (cx - (testw/3))
+	cy = (40/2) - (cy - (testh/3))
 
 #recreate the image with the character now centered
-	im1 = Image.new("RGB",  (testw,testh), "white")
+	im1 = Image.new("RGB",  (testh,testw), "white")
 #	ImageDraw.Draw(im1).text((cx,cy),testchr, fill='black', font=ttf) #X and Y
 	ImageDraw.Draw(im1).text((cx,0),testchr, fill='black', font=ttf) #X only
 
-	return (numpy.array(im1),contours[1:])
+	return numpy.array(im1)
 
 
 if __name__ == "__main__":
@@ -140,31 +94,21 @@ if __name__ == "__main__":
 	parser.add_argument("--threshold", default=5, type=float, help="set the visual match threshold, lower is a better match")
 	parser.add_argument("--dialect", type=str, help="which unicode tableset to look to generation from (%s)" % ",".join(DIALECTS),required=True)
 	parser.add_argument("--font",default = "Arial", type=str, help="font to use, Arial,Tahoma for browsers")
-	parser.add_argument("--multichr",default = 0,type=int, help="enable multi letter matches, takes longer")
-	parser.add_argument("--multichrmax",default = 2,type=int, help="maximum number of characters to try matching, more takes longer, default 2")
 
 	args = parser.parse_args()
 
 	newstring = []
 	stringoptions = []
-	
-	if args.multichr == 0:
-		letterscnt = 1
-	else:
-		letterscnt = args.multichrmax
 
 	for i in args.inputstring:
-		(im1,contours1) = get_centroidized_unicode_img(i,args.font,chrwidth=letterscnt)
+		im1 = get_centroidized_unicode_img(i,args.font)
 		hscores = {}
 		thistring = []
 		thistring.append(i)
 		
-		chrrange = [ unichr(x) for x  in range(DIALECTS[args.dialect][0],DIALECTS[args.dialect][1])]
-						  
-		for e in itertools.combinations_with_replacement(chrrange,letterscnt):
-			(im2,contours2) = get_centroidized_unicode_img("".join(e),args.font,chrwidth=letterscnt)
-			
-			hscores[e] = homograph_score(im1, contours1, im2,contours2)
+		for e in xrange(DIALECTS[args.dialect][0],DIALECTS[args.dialect][1]):
+			im2 = get_centroidized_unicode_img(unichr(e),args.font)
+			hscores[unichr(e)] = homograph_score(im1, im2)
 
 		sortedhscores = sorted(hscores.items(), key=operator.itemgetter(1))
 		for score in sortedhscores:
