@@ -53,20 +53,20 @@ the targets and displays them cutoff by the threshold.<br>
 <br>
 Its also worth mentioning that it can do this trick without resorting to a foreign alphabet as well<br>
 <br>
-$ python eyephish.py --inputstring "microsoft" --dialect=latin*microsoft ['m', 'i', 'c', 'r', 'o', 's', 'o', 'f', 't']
->microsoft [u'm', u'i', u'c', u'r', u'o', u's', u'o', u'f', u't']
-> l  e etf [' ', u'l', ' ', ' ', u'e', ' ', u'e', u't', u'f']
-> I  b bll [' ', u'I', ' ', ' ', u'b', ' ', u'b', u'l', u'l']
-> !  p pII [' ', u'!', ' ', ' ', u'p', ' ', u'p', u'I', u'I']
-> |     !! [' ', u'|', ' ', ' ', ' ', ' ', ' ', u'!', u'!']
-> :     ii [' ', u':', ' ', ' ', ' ', ' ', ' ', u'i', u'i']
-> f     || [' ', u'f', ' ', ' ', ' ', ' ', ' ', u'|', u'|']
-> t     [  [' ', u't', ' ', ' ', ' ', ' ', ' ', u'[', ' ']
-> +     T  [' ', u'+', ' ', ' ', ' ', ' ', ' ', u'T', ' ']
-> [        [' ', u'[', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-> .        [' ', u'.', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-> ;        [' ', u';', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-
+$ python eyephish.py --inputstring "microsoft" --dialect=latin*microsoft ['m', 'i', 'c', 'r', 'o', 's', 'o', 'f', 't']<br>
+>microsoft [u'm', u'i', u'c', u'r', u'o', u's', u'o', u'f', u't']<br>
+> l  e etf [' ', u'l', ' ', ' ', u'e', ' ', u'e', u't', u'f']<br>
+> I  b bll [' ', u'I', ' ', ' ', u'b', ' ', u'b', u'l', u'l']<br>
+> !  p pII [' ', u'!', ' ', ' ', u'p', ' ', u'p', u'I', u'I']<br>
+> |     !! [' ', u'|', ' ', ' ', ' ', ' ', ' ', u'!', u'!']<br>
+> :     ii [' ', u':', ' ', ' ', ' ', ' ', ' ', u'i', u'i']<br>
+> f     || [' ', u'f', ' ', ' ', ' ', ' ', ' ', u'|', u'|']<br>
+> t     [  [' ', u't', ' ', ' ', ' ', ' ', ' ', u'[', ' ']<br>
+> +     T  [' ', u'+', ' ', ' ', ' ', ' ', ' ', u'T', ' ']<br>
+> [        [' ', u'[', ' ', ' ', ' ', ' ', ' ', ' ', ' ']<br>
+> .        [' ', u'.', ' ', ' ', ' ', ' ', ' ', ' ', ' ']<br>
+> ;        [' ', u';', ' ', ' ', ' ', ' ', ' ', ' ', ' ']<br>
+<br>
 <br>
 <br>
 This script depends on OpenCV and PIL modules<br>
