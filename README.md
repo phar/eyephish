@@ -53,7 +53,8 @@ the targets and displays them cutoff by the threshold.<br>
 <br>
 Its also worth mentioning that it can do this trick without resorting to a foreign alphabet as well<br>
 <br>
-$ python eyephish.py --inputstring "microsoft" --dialect=latin*microsoft ['m', 'i', 'c', 'r', 'o', 's', 'o', 'f', 't']<br>
+$ python eyephish.py --inputstring "microsoft" --dialect=latin<br>
+microsoft ['m', 'i', 'c', 'r', 'o', 's', 'o', 'f', 't']<br>
 >microsoft [u'm', u'i', u'c', u'r', u'o', u's', u'o', u'f', u't']<br>
 > l  e etf [' ', u'l', ' ', ' ', u'e', ' ', u'e', u't', u'f']<br>
 > I  b bll [' ', u'I', ' ', ' ', u'b', ' ', u'b', u'l', u'l']<br>
